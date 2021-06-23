@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,17 +8,13 @@ namespace CustomerCardService.Models
 {
     public class Card
     {
-        private Guid Token { get; set; }
-        private Guid CardId { get; }
-        private int CustomerId { get; }
-        public long CardNumber { get; }
-        public int CVV { get; }
+        public Guid Token { get; set; }
+        [Key]
+        public Guid CardId { get; set; }
+        public int CustomerId { get; set; }
+        public long CardNumber { get; set; }
+        public int CVV { get; set; }
 
-        public Card(int customerId, long cardNumber, int cVV)
-        {
-            CustomerId = customerId;
-            CardNumber = cardNumber;
-            CVV = cVV;
-        }
+
     }
 }
