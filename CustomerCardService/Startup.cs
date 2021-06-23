@@ -1,3 +1,4 @@
+using CustomerCardService.Core.AutoMapper;
 using CustomerCardService.Domain.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,7 @@ namespace CustomerCardService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(AutoMapperConfiguration));
             services.AddDbContext<CardContext>(opt => opt.UseInMemoryDatabase("CardsList"));
             services.AddControllers();
             services.AddSwaggerGen(c =>
