@@ -1,7 +1,7 @@
-﻿using CustomerCardService.Models;
+﻿using CustomerCardService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CustomerCardService.Repository
+namespace CustomerCardService.Domain.Repository
 {
     public class CardContext : DbContext
     {

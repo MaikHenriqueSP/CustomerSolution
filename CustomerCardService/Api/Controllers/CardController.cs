@@ -1,12 +1,12 @@
-﻿using CustomerCardService.Models;
-using CustomerCardService.Repository;
+﻿using CustomerCardService.Domain.Models;
+using CustomerCardService.Domain.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CustomerCardService.Controllers
+namespace CustomerCardService.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
