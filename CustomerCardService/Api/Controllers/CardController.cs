@@ -3,6 +3,7 @@ using CustomerCardService.Api.Models.Input;
 using CustomerCardService.Api.Models.Output;
 using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
+using CustomerCardService.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,40 +16,28 @@ namespace CustomerCardService.Api.Controllers
     [ApiController]
     public class CardController : ControllerBase
     {
-        private readonly CardContext _cardContext;
-        public readonly IMapper _mapper;
 
-
-        public CardController(CardContext cardContext, IMapper iMapper)
+        private readonly ICardService cardService;
+        public CardController(ICardService cardService)
         {
-            _cardContext = cardContext;
-            _mapper = iMapper;
+            this.cardService = cardService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Card>> PostCard(CardInput cardInput)
+        public ActionResult<Card> PostCard(CardSaveInput card)
         {
-            Card cardSaved = _mapper.Map<Card>(cardInput);
-            _cardContext.Cards.Add(cardSaved);
-            await _cardContext.SaveChangesAsync();
+            CardSaveOutput cardSaved = cardService.SaveCard(card);
 
-            CardOutput card = _mapper.Map<CardOutput>(cardSaved);
-
-            return CreatedAtAction(nameof(GetSomething), new { card.CardId, card.Token },
-                new { card.CardId, card.Token });
+            return CreatedAtAction(nameof(GetTokenValidity), new { cardSaved.CardId, cardSaved.Token },
+                new { cardSaved.CardId, cardSaved.Token });
         }
 
-        [HttpGet("{cardId}")]
-        public async Task<ActionResult<Card>> GetSomething(Guid cardId)
+        [HttpGet]
+        public ActionResult<Card> GetTokenValidity(CardTokenValidationInput card)
         {
-            var card = await _cardContext.Cards.FindAsync(cardId);
+            bool tokenValidity = cardService.ValidateToken(card);
 
-            if (card == null)
-            {
-                return NotFound();
-            }
-
-            return card;
+            return Ok(new { isTokenValid = tokenValidity });
         }
     }
 }
