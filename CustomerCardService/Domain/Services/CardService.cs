@@ -24,7 +24,32 @@ namespace CustomerCardService.Domain.Services
             this.mapper = mapper;
         }
 
-        public Guid GenerateToken(CardSaveInput card)
+        public CardSaveOutput SaveCard(CardSaveInput cardInput)
+        {
+            Card cardOrDefault = cardContext.Cards
+                .SingleOrDefault(c => c.CardNumber == cardInput.CardNumber);
+
+            if (cardOrDefault == null)
+            {
+                Card card = mapper.Map<Card>(cardInput);
+                card.Token = GenerateToken(card) ;
+                card.TokenCreationDate = DateTimeOffset.UtcNow;
+                
+                cardContext.AddAsync(card);
+                cardContext.SaveChangesAsync();
+
+                return mapper.Map<CardSaveOutput>(card);
+            }
+
+            cardOrDefault.Token = GenerateToken(cardOrDefault);
+            cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
+            cardContext.AddAsync(cardOrDefault);
+            cardContext.SaveChangesAsync();
+
+            return mapper.Map<CardSaveOutput>(cardOrDefault);
+        }
+
+        private Guid GenerateToken(Card card)
         {
             long cardNumber = card.CardNumber;
             int cardNumberLastFourDigits = GetLastFourDigits(cardNumber);
@@ -36,35 +61,33 @@ namespace CustomerCardService.Domain.Services
             return new Guid(hashedRotatedString);
         }
 
-        public CardSaveOutput SaveCard(CardSaveInput cardInput)
+        public bool ValidateToken(CardTokenValidationInput cardInput)
         {
-            Card cardOrDefault = cardContext.Cards
-                .SingleOrDefault(c => c.CardNumber == cardInput.CardNumber);
+            Card card = cardContext.Cards.FindAsync(cardInput.CardId).Result;
 
-            if (cardOrDefault == null)
-            {
-                Card card = mapper.Map<Card>(cardInput);
-                card.Token = GenerateToken(cardInput);
-                card.TokenCreationDate = DateTimeOffset.UtcNow;
-
-                cardContext.AddAsync(card);
-                cardContext.SaveChangesAsync();
-
-                return mapper.Map<CardSaveOutput>(card);
+            if (card == null)
+            { 
+                //@TODO: throw exception
             }
 
-            cardOrDefault.Token = GenerateToken(cardInput);
-            cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
-            cardContext.AddAsync(cardOrDefault);
-            cardContext.SaveChangesAsync();
+            if (!IsCreationTimeStillValid(card.TokenCreationDate))
+            {
+                //@TODO: Throw exception
+            
+            }
 
-            return mapper.Map<CardSaveOutput>(cardOrDefault);
+            if (cardInput.CustomerId != card.CustomerId) {
+                //@TODO: Throw exception
+            }
 
+            //@TODO: Format the card
+            Console.WriteLine(card.CardNumber);
+            return true;
         }
 
-        public bool ValidateToken(CardTokenValidationInput card)
-        {
-            throw new NotImplementedException();
+        private bool IsCreationTimeStillValid(DateTimeOffset creationTime) {
+            //@TODO: DO NOT USE 30 MINUTES HARD-CODED
+            return (DateTimeOffset.UtcNow - creationTime).TotalMinutes > 30;
         }
 
         private static int GetLastFourDigits(long number)

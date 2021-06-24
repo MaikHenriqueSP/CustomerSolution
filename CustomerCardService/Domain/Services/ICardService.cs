@@ -11,7 +11,6 @@ namespace CustomerCardService.Domain.Services
     public interface ICardService
     {
         CardSaveOutput SaveCard(CardSaveInput card);
-        Guid GenerateToken(CardSaveInput card);
         bool ValidateToken(CardTokenValidationInput card);
     }
 }
