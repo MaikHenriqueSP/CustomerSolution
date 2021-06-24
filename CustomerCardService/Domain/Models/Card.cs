@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 namespace CustomerCardService.Domain.Models
 {
     public class Card
-    {
+    { 
         
-        public Guid Token { get; set; }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid CardId { get; set; }
         public int CustomerId { get; set; }
         public long CardNumber { get; set; }
         public int CVV { get; set; }
-
+        public Guid Token { get; set; }
+        public DateTimeOffset TokenCreationDate { get; set; }
 
     }
 }

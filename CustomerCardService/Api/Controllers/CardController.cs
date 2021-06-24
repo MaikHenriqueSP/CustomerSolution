@@ -28,8 +28,7 @@ namespace CustomerCardService.Api.Controllers
         {
             CardSaveOutput cardSaved = cardService.SaveCard(card);
 
-            return CreatedAtAction(nameof(GetTokenValidity), new { cardSaved.CardId, cardSaved.Token },
-                new { cardSaved.CardId, cardSaved.Token });
+            return CreatedAtAction(nameof(GetTokenValidity), cardSaved);
         }
 
         [HttpGet]

@@ -45,6 +45,7 @@ namespace CustomerCardService.Domain.Services
             {
                 Card card = mapper.Map<Card>(cardInput);
                 card.Token = GenerateToken(cardInput);
+                card.TokenCreationDate = DateTimeOffset.UtcNow;
 
                 cardContext.AddAsync(card);
                 cardContext.SaveChangesAsync();
@@ -53,6 +54,7 @@ namespace CustomerCardService.Domain.Services
             }
 
             cardOrDefault.Token = GenerateToken(cardInput);
+            cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
             cardContext.AddAsync(cardOrDefault);
             cardContext.SaveChangesAsync();
 
