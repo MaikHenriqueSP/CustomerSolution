@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CustomerCardService.Api.Models.Input
 {
-    public class CardInput
+    public class CardSaveInput
     {
         public int CustomerId { get; set; }
         public long CardNumber { get; set; }
