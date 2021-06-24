@@ -41,7 +41,14 @@ namespace CustomerCardService.Domain.Services
                 return mapper.Map<CardSaveOutput>(card);
             }
 
-            cardOrDefault.Token = GenerateToken(cardOrDefault);
+            if (cardInput.CustomerId != cardOrDefault.CustomerId) { 
+                //@TODO: Throw exception
+            }
+
+            if (cardInput.CVV != cardOrDefault.CVV) { 
+                //@TODO: Throw exception
+            }
+
             cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
             cardContext.AddAsync(cardOrDefault);
             cardContext.SaveChangesAsync();
