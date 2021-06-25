@@ -49,6 +49,10 @@ namespace CustomerCardService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomerCardService v1"));
             }
+            else
+            {
+                app.UseExceptionHandler("/error");
+            }
 
             app.UseHttpsRedirection();
 
