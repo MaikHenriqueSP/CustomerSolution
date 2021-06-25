@@ -89,10 +89,12 @@ namespace CustomerCardService.Domain.Services
             {
                 throw new ArgumentException("The provided customer data is inconsistent for the given card");
             }
-
-            //@TODO: Format the card
+            
             Console.WriteLine(card.CardNumber);
-            return true;
+
+            Guid originalToken = GenerateToken(card);
+
+            return originalToken.Equals(cardInput.Token);
         }
 
         private bool IsCardOwnerValid(CardTokenValidationInput cardInput, Card card)
