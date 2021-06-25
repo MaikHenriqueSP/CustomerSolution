@@ -36,8 +36,8 @@ namespace CustomerCardService.Domain.Services
                 card.Token = GenerateToken(card);
                 card.TokenCreationDate = DateTimeOffset.UtcNow;
 
-                cardContext.AddAsync(card);
-                cardContext.SaveChangesAsync();
+                cardContext.Add(card);
+                cardContext.SaveChanges();
 
                 return mapper.Map<CardSaveOutput>(card);
             }
@@ -53,9 +53,10 @@ namespace CustomerCardService.Domain.Services
             }
 
             cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
-            cardContext.AddAsync(cardOrDefault);
-            cardContext.SaveChangesAsync();
+            cardContext.Add(cardOrDefault);
+            cardContext.SaveChanges();
 
+            var a = cardContext.Cards;
             return mapper.Map<CardSaveOutput>(cardOrDefault);
         }
 
@@ -73,6 +74,7 @@ namespace CustomerCardService.Domain.Services
 
         public bool ValidateToken(CardTokenValidationInput cardInput)
         {
+            
             Card card = cardContext.Cards.FindAsync(cardInput.CardId).Result;
 
             if (card == null)
@@ -80,7 +82,7 @@ namespace CustomerCardService.Domain.Services
                 throw new CardNotFoundException();
             }
 
-            if (!IsCreationTimeStillValid(card.TokenCreationDate))
+            if (!IsTokenCreationTimeStillValid(card.TokenCreationDate))
             {
                 throw new TokenExpiredException();
             }
@@ -98,10 +100,10 @@ namespace CustomerCardService.Domain.Services
         }
 
 
-        private static bool IsCreationTimeStillValid(DateTimeOffset creationTime)
+        private static bool IsTokenCreationTimeStillValid(DateTimeOffset creationTime)
         {
             //@TODO: DO NOT USE 30 MINUTES HARD-CODED
-            return (DateTimeOffset.UtcNow - creationTime).TotalMinutes > 30;
+            return (DateTimeOffset.UtcNow - creationTime).TotalMinutes < 30;
         }
 
         private static int GetLastFourDigits(long number)

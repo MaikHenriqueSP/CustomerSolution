@@ -1,4 +1,5 @@
 ﻿using CustomerCardService.Api.Models.Input;
+using CustomerCardService.Api.Models.Output;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -71,12 +72,48 @@ namespace CustomerCardService.IntegrationTests
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
-        private static StringContent GetStringContentSerialized(CardSaveInput invalidCard,
+        [Fact]
+        private async Task GetTokenValidity_WhenTokenIsValid_ReturnsStatusCodeOk()
+        {
+            //Arrange
+            var validCard = new CardSaveInput()
+            {
+                CardNumber = 12344566,
+                CVV = 1234,
+                CustomerId = 12
+            };
+            string endpoint = "/api/v1/card";
+            string tokeValidityEndpoint = "/api/v1/card/token/validity";
+
+            //Act
+            HttpResponseMessage response = await TestClient.PostAsync(endpoint, GetStringContentSerialized(validCard));
+            response.EnsureSuccessStatusCode();
+
+            string responseString = await response.Content.ReadAsStringAsync();
+            CardSaveOutput cardSaved = JsonConvert.DeserializeObject<CardSaveOutput>(responseString);
+
+            CardTokenValidationInput validCardTokenValidationInput = new CardTokenValidationInput()
+            {
+                CardId = cardSaved.CardId,
+                CustomerId = validCard.CustomerId,
+                CVV = validCard.CVV,
+                Token = cardSaved.Token
+            };
+
+            HttpResponseMessage tokenValidationResponse = await TestClient.PostAsync(tokeValidityEndpoint, GetStringContentSerialized(validCardTokenValidationInput));
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, tokenValidationResponse.StatusCode);
+        }
+
+        private static StringContent GetStringContentSerialized(object obj,
             string mediaType = "application/json")
         {
-            return new StringContent(JsonConvert.SerializeObject(invalidCard), 
+
+            return new StringContent(JsonConvert.SerializeObject(obj),
                 Encoding.UTF8, mediaType);
         }
+
+
 
     }
 }

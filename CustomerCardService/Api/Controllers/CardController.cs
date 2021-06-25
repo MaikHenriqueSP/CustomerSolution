@@ -31,7 +31,8 @@ namespace CustomerCardService.Api.Controllers
             return CreatedAtAction(nameof(GetTokenValidity), cardSaved);
         }
 
-        [HttpGet]
+        [Route("token/validity")]
+        [HttpPost]
         public ActionResult<Card> GetTokenValidity(CardTokenValidationInput card)
         {
             bool tokenValidity = cardService.ValidateToken(card);

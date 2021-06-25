@@ -32,7 +32,7 @@ namespace CustomerCardService
         {
             services.AddScoped<ICardService, CardService>();
             services.AddAutoMapper(typeof(AutoMapperConfiguration));
-            services.AddDbContext<CardContext>(opt => opt.UseInMemoryDatabase("CardsList"));
+            services.AddDbContext<CardContext>(opt => opt.UseInMemoryDatabase("CardsList"), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
