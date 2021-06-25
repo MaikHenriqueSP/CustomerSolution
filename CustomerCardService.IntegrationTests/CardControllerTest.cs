@@ -138,11 +138,11 @@ namespace CustomerCardService.IntegrationTests
             HttpResponseMessage tokenValidationResponse = await TestClient.PostAsync(tokeValidityEndpoint, GetStringContentSerialized(validCardTokenValidationInput));
 
             //Assert            //@TODO: Implement middleware for the correct 
-            Assert.Equal(HttpStatusCode.InternalServerError, tokenValidationResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, tokenValidationResponse.StatusCode);
         }
 
         [Fact]
-        private async Task GetTokenValidity_WhenTokenIsDiffered_ReturnsStatusCodeBadRequest_AndValidityEqualsFalse()
+        private async Task GetTokenValidity_WhenTokenIsDifferent_ReturnsStatusCodeBadRequest_AndValidityEqualsFalse()
         {
             //Arrange
             var validCard = new CardSaveInput()
