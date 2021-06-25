@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CustomerCardService.Api.Models.Input;
 using CustomerCardService.Api.Models.Output;
+using CustomerCardService.Domain.Exceptions;
 using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -32,21 +33,23 @@ namespace CustomerCardService.Domain.Services
             if (cardOrDefault == null)
             {
                 Card card = mapper.Map<Card>(cardInput);
-                card.Token = GenerateToken(card) ;
+                card.Token = GenerateToken(card);
                 card.TokenCreationDate = DateTimeOffset.UtcNow;
-                
+
                 cardContext.AddAsync(card);
                 cardContext.SaveChangesAsync();
 
                 return mapper.Map<CardSaveOutput>(card);
             }
 
-            if (cardInput.CustomerId != cardOrDefault.CustomerId) { 
-                //@TODO: Throw exception
+            if (cardInput.CustomerId != cardOrDefault.CustomerId)
+            {
+                throw new InconsistentCardException();
             }
 
-            if (cardInput.CVV != cardOrDefault.CVV) { 
-                //@TODO: Throw exception
+            if (cardInput.CVV != cardOrDefault.CVV)
+            {
+                throw new InconsistentCardException();
             }
 
             cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
@@ -56,7 +59,7 @@ namespace CustomerCardService.Domain.Services
             return mapper.Map<CardSaveOutput>(cardOrDefault);
         }
 
-        private Guid GenerateToken(Card card)
+        protected Guid GenerateToken(Card card)
         {
             long cardNumber = card.CardNumber;
             int cardNumberLastFourDigits = GetLastFourDigits(cardNumber);
@@ -73,26 +76,30 @@ namespace CustomerCardService.Domain.Services
             Card card = cardContext.Cards.FindAsync(cardInput.CardId).Result;
 
             if (card == null)
-            { 
-                //@TODO: throw exception
+            {
+                throw new CardNotFoundException();
             }
 
             if (!IsCreationTimeStillValid(card.TokenCreationDate))
             {
-                //@TODO: Throw exception
+                throw new TokenExpiredException();
+            }
+
+            if (cardInput.CustomerId != card.CustomerId)
+            {
+                throw new InconsistentCardException();
+            }
             
-            }
-
-            if (cardInput.CustomerId != card.CustomerId) {
-                //@TODO: Throw exception
-            }
-
-            //@TODO: Format the card
             Console.WriteLine(card.CardNumber);
-            return true;
+
+            Guid originalToken = GenerateToken(card);
+
+            return originalToken.Equals(cardInput.Token);
         }
 
-        private bool IsCreationTimeStillValid(DateTimeOffset creationTime) {
+
+        private static bool IsCreationTimeStillValid(DateTimeOffset creationTime)
+        {
             //@TODO: DO NOT USE 30 MINUTES HARD-CODED
             return (DateTimeOffset.UtcNow - creationTime).TotalMinutes > 30;
         }
@@ -102,7 +109,7 @@ namespace CustomerCardService.Domain.Services
             return (int)(number % 10000);
         }
 
-        private byte[] CalculateStringMD5Hash(string target)
+        private static byte[] CalculateStringMD5Hash(string target)
         {
             using (MD5 md5 = MD5.Create())
             {
@@ -110,9 +117,9 @@ namespace CustomerCardService.Domain.Services
             }
         }
 
-        private string ConvertByteArrayToString(byte[] hash)
+        private static string ConvertByteArrayToString(byte[] hash)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
             for (int i = 0; i < hash.Length; i++)
             {
@@ -122,7 +129,7 @@ namespace CustomerCardService.Domain.Services
             return sb.ToString();
         }
 
-        private int[] RightRotateNumberToIntArray(int number, int rotations)
+        private static int[] RightRotateNumberToIntArray(int number, int rotations)
         {
             int numberLength = (int)Math.Log10(number) + 1;
             int[] rightRotatedVector = new int[numberLength];
@@ -130,12 +137,12 @@ namespace CustomerCardService.Domain.Services
             for (int i = numberLength - 1, multiplicationFactor = 10, divisionFactor = 1; i >= 0; i--,
                 multiplicationFactor *= 10, divisionFactor *= 10)
             {
-                int digit = (number % multiplicationFactor) / divisionFactor;
-                rightRotatedVector[(i + rotations) % numberLength] = digit;
+                int ithDigit = (number % multiplicationFactor) / divisionFactor;
+                int digitNewPosition = (i + rotations) % numberLength;
+                rightRotatedVector[digitNewPosition] = ithDigit;
             }
             return rightRotatedVector;
         }
-
 
     }
 }

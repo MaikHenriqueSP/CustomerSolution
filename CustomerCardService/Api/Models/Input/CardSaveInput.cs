@@ -1,4 +1,4 @@
-﻿using CustomerCardService.Domain.Validation;
+﻿using CustomerCardService.Core.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
