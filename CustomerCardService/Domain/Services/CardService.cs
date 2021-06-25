@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CustomerCardService.Api.Models.Input;
 using CustomerCardService.Api.Models.Output;
+using CustomerCardService.Domain.Exceptions;
 using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -73,18 +74,17 @@ namespace CustomerCardService.Domain.Services
             Card card = cardContext.Cards.FindAsync(cardInput.CardId).Result;
 
             if (card == null)
-            { 
-                //@TODO: throw exception
+            {
+                throw new CardNotFoundException();
             }
 
             if (!IsCreationTimeStillValid(card.TokenCreationDate))
             {
-                //@TODO: Throw exception
-            
+                throw new TokenExpiredException();
             }
 
             if (cardInput.CustomerId != card.CustomerId) {
-                //@TODO: Throw exception
+                throw new ArgumentException("The provided customer data is inconsistent for the given card");
             }
 
             //@TODO: Format the card
