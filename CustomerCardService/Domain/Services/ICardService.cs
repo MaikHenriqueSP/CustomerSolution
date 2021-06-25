@@ -1,16 +1,13 @@
-﻿using CustomerCardService.Api.Models.Input;
+﻿
 using CustomerCardService.Api.Models.Output;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using CustomerCardService.Domain.Models;
+
 
 namespace CustomerCardService.Domain.Services
 {
     public interface ICardService
     {
-        CardSaveOutput SaveCard(CardSaveInput card);
-        bool ValidateToken(CardTokenValidationInput card);
+        Card SaveCard(Card card);
+        bool ValidateToken(Card card);
     }
 }
