@@ -139,12 +139,12 @@ namespace CustomerCardService.Domain.Services
             for (int i = numberLength - 1, multiplicationFactor = 10, divisionFactor = 1; i >= 0; i--,
                 multiplicationFactor *= 10, divisionFactor *= 10)
             {
-                int digit = (number % multiplicationFactor) / divisionFactor;
-                rightRotatedVector[(i + rotations) % numberLength] = digit;
+                int ithDigit = (number % multiplicationFactor) / divisionFactor;
+                int digitNewPosition = (i + rotations) % numberLength;
+                rightRotatedVector[digitNewPosition] = ithDigit;
             }
             return rightRotatedVector;
         }
-
 
     }
 }
