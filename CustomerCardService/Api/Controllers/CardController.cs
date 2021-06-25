@@ -18,24 +18,29 @@ namespace CustomerCardService.Api.Controllers
     {
 
         private readonly ICardService cardService;
-        public CardController(ICardService cardService)
+        private readonly IMapper mapper;
+        public CardController(ICardService cardService, IMapper mapper)
         {
             this.cardService = cardService;
+            this.mapper = mapper;
         }
 
         [HttpPost]
         public ActionResult<Card> PostCard(CardSaveInput card)
         {
-            throw new Exception("aaa");
-            CardSaveOutput cardSaved = cardService.SaveCard(card);
+            Card cardMapped = mapper.Map<Card>(card);
+            Card cardSaved = cardService.SaveCard(cardMapped);
+            CardSaveOutput cardSavedOutput = mapper.Map<CardSaveOutput>(cardSaved);
 
-            return CreatedAtAction(nameof(GetTokenValidity), cardSaved);
+            return CreatedAtAction(nameof(GetTokenValidity), cardSavedOutput);
         }
 
-        [HttpGet]
+        [Route("token/validity")]
+        [HttpPost]
         public ActionResult<Card> GetTokenValidity(CardTokenValidationInput card)
         {
-            bool tokenValidity = cardService.ValidateToken(card);
+            Card cardMapped = mapper.Map<Card>(card);
+            bool tokenValidity = cardService.ValidateToken(cardMapped);
 
             return Ok(new { isTokenValid = tokenValidity });
         }

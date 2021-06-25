@@ -25,38 +25,33 @@ namespace CustomerCardService.Domain.Services
             this.mapper = mapper;
         }
 
-        public CardSaveOutput SaveCard(CardSaveInput cardInput)
+        public Card SaveCard(Card card)
         {
             Card cardOrDefault = cardContext.Cards
-                .SingleOrDefault(c => c.CardNumber == cardInput.CardNumber);
+                .SingleOrDefault(c => c.CardNumber == card.CardNumber);
 
             if (cardOrDefault == null)
             {
-                Card card = mapper.Map<Card>(cardInput);
                 card.Token = GenerateToken(card);
                 card.TokenCreationDate = DateTimeOffset.UtcNow;
 
-                cardContext.AddAsync(card);
-                cardContext.SaveChangesAsync();
+                cardContext.Add(card);
+                cardContext.SaveChanges();
 
-                return mapper.Map<CardSaveOutput>(card);
+                return card;
             }
 
-            if (cardInput.CustomerId != cardOrDefault.CustomerId)
-            {
-                throw new InconsistentCardException();
-            }
-
-            if (cardInput.CVV != cardOrDefault.CVV)
+            if (card.CustomerId != cardOrDefault.CustomerId || 
+                card.CVV != cardOrDefault.CVV)
             {
                 throw new InconsistentCardException();
             }
 
             cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
-            cardContext.AddAsync(cardOrDefault);
-            cardContext.SaveChangesAsync();
+            cardContext.Update(cardOrDefault);
+            cardContext.SaveChanges();
 
-            return mapper.Map<CardSaveOutput>(cardOrDefault);
+            return cardOrDefault;
         }
 
         protected Guid GenerateToken(Card card)
@@ -71,37 +66,38 @@ namespace CustomerCardService.Domain.Services
             return new Guid(hashedRotatedString);
         }
 
-        public bool ValidateToken(CardTokenValidationInput cardInput)
+        public bool ValidateToken(Card card)
         {
-            Card card = cardContext.Cards.FindAsync(cardInput.CardId).Result;
+            
+            Card queriedCard = cardContext.Cards.FindAsync(card.CardId).Result;
 
-            if (card == null)
+            if (queriedCard == null)
             {
                 throw new CardNotFoundException();
             }
 
-            if (!IsCreationTimeStillValid(card.TokenCreationDate))
+            if (!IsTokenCreationTimeStillValid(queriedCard.TokenCreationDate))
             {
                 throw new TokenExpiredException();
             }
 
-            if (cardInput.CustomerId != card.CustomerId)
+            if (card.CustomerId != queriedCard.CustomerId)
             {
                 throw new InconsistentCardException();
             }
             
             Console.WriteLine(card.CardNumber);
 
-            Guid originalToken = GenerateToken(card);
+            Guid originalToken = GenerateToken(queriedCard);
 
-            return originalToken.Equals(cardInput.Token);
+            return originalToken.Equals(card.Token);
         }
 
 
-        private static bool IsCreationTimeStillValid(DateTimeOffset creationTime)
+        private static bool IsTokenCreationTimeStillValid(DateTimeOffset creationTime)
         {
             //@TODO: DO NOT USE 30 MINUTES HARD-CODED
-            return (DateTimeOffset.UtcNow - creationTime).TotalMinutes > 30;
+            return (DateTimeOffset.UtcNow - creationTime).TotalMinutes < 30;
         }
 
         private static int GetLastFourDigits(long number)
