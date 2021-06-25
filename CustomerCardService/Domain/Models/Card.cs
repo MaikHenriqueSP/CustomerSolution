@@ -1,4 +1,4 @@
-﻿using CustomerCardService.Domain.Validation;
+﻿using CustomerCardService.Core.Validation;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
