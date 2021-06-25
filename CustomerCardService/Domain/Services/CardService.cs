@@ -44,12 +44,12 @@ namespace CustomerCardService.Domain.Services
 
             if (cardInput.CustomerId != cardOrDefault.CustomerId)
             {
-                //@TODO: Throw exception
+                throw new InconsistentCardException();
             }
 
             if (cardInput.CVV != cardOrDefault.CVV)
             {
-                //@TODO: Throw exception
+                throw new InconsistentCardException();
             }
 
             cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
@@ -85,9 +85,9 @@ namespace CustomerCardService.Domain.Services
                 throw new TokenExpiredException();
             }
 
-            if (IsCardOwnerValid(cardInput, card))
+            if (cardInput.CustomerId != card.CustomerId)
             {
-                throw new ArgumentException("The provided customer data is inconsistent for the given card");
+                throw new InconsistentCardException();
             }
             
             Console.WriteLine(card.CardNumber);
@@ -97,10 +97,6 @@ namespace CustomerCardService.Domain.Services
             return originalToken.Equals(cardInput.Token);
         }
 
-        private bool IsCardOwnerValid(CardTokenValidationInput cardInput, Card card)
-        {
-            return cardInput.CustomerId != card.CustomerId;
-        }
 
         private bool IsCreationTimeStillValid(DateTimeOffset creationTime)
         {
