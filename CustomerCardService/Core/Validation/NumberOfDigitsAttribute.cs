@@ -6,8 +6,9 @@ namespace CustomerCardService.Core.Validation
     {
         private readonly int minLength;
         private readonly int maxLength;
-        
-        public NumberOfDigitsAttribute(int maxLength, int minLength = 0) : base("")
+        private static readonly string defaultMessage = "The number of digits is not within the allowed range";
+
+        public NumberOfDigitsAttribute(int maxLength, int minLength = 0) : base(defaultMessage)
         {
             this.minLength = minLength;
             this.maxLength = maxLength;
