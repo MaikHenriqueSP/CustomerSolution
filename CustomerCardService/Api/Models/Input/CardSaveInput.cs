@@ -15,7 +15,7 @@ namespace CustomerCardService.Api.Models.Input
         [Required]
         [NumberOfDigits(maxLength: 16,
             ErrorMessage = "The CardNumber field shouldn't have more than 16 digits.")]
-        
+
         public long CardNumber { get; set; }
         [Required]
         [NumberOfDigits(maxLength: 5,

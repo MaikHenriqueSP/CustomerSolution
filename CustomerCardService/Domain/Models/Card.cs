@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 namespace CustomerCardService.Domain.Models
 {
     public class Card
-    { 
-        
+    {
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid CardId { get; set; }
-        
+
         [Required]
         public int CustomerId { get; set; }
 
         [Required]
         [NumberOfDigits(maxLength: 16,
-            ErrorMessage = "The CardNumber field shouldn't have more than 16 digits.")]        
+            ErrorMessage = "The CardNumber field shouldn't have more than 16 digits.")]
         public long CardNumber { get; set; }
         [Required]
         [NumberOfDigits(maxLength: 5,
@@ -29,7 +29,7 @@ namespace CustomerCardService.Domain.Models
         public int CVV { get; set; }
 
         public Guid Token { get; set; }
-        
+
         public DateTimeOffset TokenCreationDate { get; set; }
 
     }

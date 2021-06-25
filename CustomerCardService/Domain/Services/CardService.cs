@@ -18,11 +18,9 @@ namespace CustomerCardService.Domain.Services
     public class CardService : ICardService
     {
         private readonly CardContext cardContext;
-        private readonly IMapper mapper;
-        public CardService(CardContext cardContext, IMapper mapper)
+        public CardService(CardContext cardContext)
         {
             this.cardContext = cardContext;
-            this.mapper = mapper;
         }
 
         public Card SaveCard(Card card)
@@ -41,7 +39,7 @@ namespace CustomerCardService.Domain.Services
                 return card;
             }
 
-            if (card.CustomerId != cardOrDefault.CustomerId || 
+            if (card.CustomerId != cardOrDefault.CustomerId ||
                 card.CVV != cardOrDefault.CVV)
             {
                 throw new InconsistentCardException();
@@ -68,7 +66,7 @@ namespace CustomerCardService.Domain.Services
 
         public bool ValidateToken(Card card)
         {
-            
+
             Card queriedCard = cardContext.Cards.FindAsync(card.CardId).Result;
 
             if (queriedCard == null)
@@ -85,7 +83,7 @@ namespace CustomerCardService.Domain.Services
             {
                 throw new InconsistentCardException();
             }
-            
+
             Console.WriteLine(card.CardNumber);
 
             Guid originalToken = GenerateToken(queriedCard);

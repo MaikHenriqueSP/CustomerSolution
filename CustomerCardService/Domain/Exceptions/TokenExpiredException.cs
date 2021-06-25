@@ -9,7 +9,7 @@ namespace CustomerCardService.Domain.Exceptions
     {
         private static readonly string defaultMessage = "The provided token has expired";
 
-        public TokenExpiredException(): base(defaultMessage)
+        public TokenExpiredException() : base(defaultMessage)
         {
         }
 
