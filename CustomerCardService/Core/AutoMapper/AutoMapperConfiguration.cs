@@ -13,8 +13,10 @@ namespace CustomerCardService.Core.AutoMapper
     {
         public AutoMapperConfiguration()
         {
-            CreateMap<CardInput, Card>();
-            CreateMap<Card, CardOutput>();
+            CreateMap<CardSaveInput, Card>();
+            CreateMap<CardTokenValidationInput, Card>();
+
+            CreateMap<Card, CardSaveOutput>();
         }
     }
 }

@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace CustomerCardService.Api.Models.Input
 {
-    public class CardInput
+    public class CardTokenValidationInput
     {
         public int CustomerId { get; set; }
-        public long CardNumber { get; set; }
+        public Guid CardId { get; set; }
+        public Guid Token { get; set; }
         public int CVV { get; set; }
     }
 }
