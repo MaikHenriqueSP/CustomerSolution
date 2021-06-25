@@ -59,7 +59,7 @@ namespace CustomerCardService.Domain.Services
             return mapper.Map<CardSaveOutput>(cardOrDefault);
         }
 
-        private Guid GenerateToken(Card card)
+        protected Guid GenerateToken(Card card)
         {
             long cardNumber = card.CardNumber;
             int cardNumberLastFourDigits = GetLastFourDigits(cardNumber);
