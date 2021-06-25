@@ -41,18 +41,14 @@ namespace CustomerCardService.Domain.Services
                 return card;
             }
 
-            if (card.CustomerId != cardOrDefault.CustomerId)
-            {
-                throw new InconsistentCardException();
-            }
-
-            if (card.CVV != cardOrDefault.CVV)
+            if (card.CustomerId != cardOrDefault.CustomerId || 
+                card.CVV != cardOrDefault.CVV)
             {
                 throw new InconsistentCardException();
             }
 
             cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
-            cardContext.Add(cardOrDefault);
+            cardContext.Update(cardOrDefault);
             cardContext.SaveChanges();
 
             return cardOrDefault;
