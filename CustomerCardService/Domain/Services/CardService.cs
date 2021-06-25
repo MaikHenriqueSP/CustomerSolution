@@ -33,20 +33,22 @@ namespace CustomerCardService.Domain.Services
             if (cardOrDefault == null)
             {
                 Card card = mapper.Map<Card>(cardInput);
-                card.Token = GenerateToken(card) ;
+                card.Token = GenerateToken(card);
                 card.TokenCreationDate = DateTimeOffset.UtcNow;
-                
+
                 cardContext.AddAsync(card);
                 cardContext.SaveChangesAsync();
 
                 return mapper.Map<CardSaveOutput>(card);
             }
 
-            if (cardInput.CustomerId != cardOrDefault.CustomerId) { 
+            if (cardInput.CustomerId != cardOrDefault.CustomerId)
+            {
                 //@TODO: Throw exception
             }
 
-            if (cardInput.CVV != cardOrDefault.CVV) { 
+            if (cardInput.CVV != cardOrDefault.CVV)
+            {
                 //@TODO: Throw exception
             }
 
@@ -83,7 +85,8 @@ namespace CustomerCardService.Domain.Services
                 throw new TokenExpiredException();
             }
 
-            if (cardInput.CustomerId != card.CustomerId) {
+            if (IsCardOwnerValid(cardInput, card))
+            {
                 throw new ArgumentException("The provided customer data is inconsistent for the given card");
             }
 
@@ -92,7 +95,13 @@ namespace CustomerCardService.Domain.Services
             return true;
         }
 
-        private bool IsCreationTimeStillValid(DateTimeOffset creationTime) {
+        private bool IsCardOwnerValid(CardTokenValidationInput cardInput, Card card)
+        {
+            return cardInput.CustomerId != card.CustomerId;
+        }
+
+        private bool IsCreationTimeStillValid(DateTimeOffset creationTime)
+        {
             //@TODO: DO NOT USE 30 MINUTES HARD-CODED
             return (DateTimeOffset.UtcNow - creationTime).TotalMinutes > 30;
         }
