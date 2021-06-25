@@ -98,7 +98,7 @@ namespace CustomerCardService.Domain.Services
         }
 
 
-        private bool IsCreationTimeStillValid(DateTimeOffset creationTime)
+        private static bool IsCreationTimeStillValid(DateTimeOffset creationTime)
         {
             //@TODO: DO NOT USE 30 MINUTES HARD-CODED
             return (DateTimeOffset.UtcNow - creationTime).TotalMinutes > 30;
@@ -109,7 +109,7 @@ namespace CustomerCardService.Domain.Services
             return (int)(number % 10000);
         }
 
-        private byte[] CalculateStringMD5Hash(string target)
+        private static byte[] CalculateStringMD5Hash(string target)
         {
             using (MD5 md5 = MD5.Create())
             {
@@ -117,9 +117,9 @@ namespace CustomerCardService.Domain.Services
             }
         }
 
-        private string ConvertByteArrayToString(byte[] hash)
+        private static string ConvertByteArrayToString(byte[] hash)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
             for (int i = 0; i < hash.Length; i++)
             {
@@ -129,7 +129,7 @@ namespace CustomerCardService.Domain.Services
             return sb.ToString();
         }
 
-        private int[] RightRotateNumberToIntArray(int number, int rotations)
+        private static int[] RightRotateNumberToIntArray(int number, int rotations)
         {
             int numberLength = (int)Math.Log10(number) + 1;
             int[] rightRotatedVector = new int[numberLength];
