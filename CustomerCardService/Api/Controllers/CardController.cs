@@ -26,7 +26,6 @@ namespace CustomerCardService.Api.Controllers
         [HttpPost]
         public ActionResult<Card> PostCard(CardSaveInput card)
         {
-            throw new Exception("aaa");
             CardSaveOutput cardSaved = cardService.SaveCard(card);
 
             return CreatedAtAction(nameof(GetTokenValidity), cardSaved);
