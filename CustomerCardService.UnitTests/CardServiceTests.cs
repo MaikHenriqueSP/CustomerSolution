@@ -133,7 +133,7 @@ namespace CustomerCardService.UnitTests
         }
 
         [Fact]
-        public void ValidateToken_WhenTokenIsAndValidSaved_ShouldReturnTrue()
+        public void ValidateToken_WhenTokenIsValid_ShouldReturnTrue()
         {
             //Arrange
             Card validCard = new()
@@ -147,13 +147,66 @@ namespace CustomerCardService.UnitTests
 
             cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
 
-
             //Act
             bool isTokenValid = cardService.ValidateToken(validCard);
 
-
             //Assert
             Assert.True(isTokenValid);
+        }
+
+
+        [Fact]
+        public void ValidateToken_WhenTokenOutDated_ShouldReturnFalse()
+        {
+            //Arrange
+            Card validCard = new()
+            {
+                CVV = 620,
+                CardNumber = 42345678922,
+                CustomerId = 1254,
+                TokenCreationDate = DateTimeOffset.UtcNow - TimeSpan.FromMinutes(31),
+                Token = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+            };
+
+            cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
+
+            //Act
+            Action performValidation = () => cardService.ValidateToken(validCard);
+
+            //Assert
+            Assert.Throws<TokenExpiredException>(performValidation);
+        }
+
+
+        [Fact]
+        public void ValidateToken_WhenCardCustomerAreDifferent_ShouldThrowInconsistentCardException()
+        {
+            //Arrange
+            Card validCard = new()
+            {
+                CVV = 620,
+                CardNumber = 42345678922,
+                CustomerId = 1254,
+                TokenCreationDate = DateTimeOffset.UtcNow,
+                Token = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+            };
+
+            Card invalidCard = new()
+            {
+                CVV = validCard.CVV,
+                CardNumber = validCard.CardNumber,
+                CustomerId = 1111,
+                TokenCreationDate = validCard.TokenCreationDate,
+                Token = validCard.Token
+            };
+
+            cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
+
+            //Act
+            Action performValidation = () => cardService.ValidateToken(invalidCard);
+
+            //Assert
+            Assert.Throws<InconsistentCardException>(performValidation);
         }
     }
 }
