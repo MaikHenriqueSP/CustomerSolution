@@ -14,23 +14,26 @@ namespace CustomerCardService.Domain.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid CardId { get; set; }
+        public Guid CardId { get; private set; }
 
         [Required]
-        public int CustomerId { get; set; }
+        public int CustomerId { get; private set; }
 
         [Required]
-        [NumberOfDigits(maxLength: 16,
-            ErrorMessage = "The CardNumber field shouldn't have more than 16 digits.")]
-        public long CardNumber { get; set; }
+        public long CardNumber { get; private set; }
+        
         [Required]
-        [NumberOfDigits(maxLength: 5,
-            ErrorMessage = "The CVV field shouldn't have more than 5 digits.")]
-        public int CVV { get; set; }
+        public int CVV { get; private set; }
 
         public Guid Token { get; set; }
 
         public DateTimeOffset TokenCreationDate { get; set; }
 
+        public Card(int customerId, long cardNumber, int cVV)
+        {
+            CustomerId = customerId;
+            CardNumber = cardNumber;
+            CVV = cVV;
+        }
     }
 }

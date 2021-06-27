@@ -24,7 +24,7 @@ namespace CustomerCardService.UnitTests
         public void SaveCard_WhenCardIsValid_ShouldReturnSavedCard()
         {
             //Arrange
-            Card card = new Card()
+            Card card = new()
             {
                 CVV = 123,
                 CardNumber = 12345,
@@ -34,8 +34,8 @@ namespace CustomerCardService.UnitTests
             var cards = new List<Card>() { card };
             var mockDbSet = DbContextMock.GenerateDbSetFromList(cards);
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
-            //Act
             
+            //Act       
             Card savedCard = cardService.SaveCard(card);
 
             //Assert
@@ -43,5 +43,33 @@ namespace CustomerCardService.UnitTests
             Assert.Equal(card.CVV, savedCard.CVV);
             Assert.Equal(card.CustomerId, savedCard.CustomerId);
         }
+
+        [Fact]
+        public void SaveCard_WhenCardCVVHasMoreThan5Digits_ShouldThrow()
+        {
+            //Arrange
+            Card card = new()
+            {
+                CVV = 1234567,
+                CardNumber = 12345,
+
+            };
+
+            var cards = new List<Card>() { card };
+            var mockDbSet = DbContextMock.GenerateDbSetFromList(cards);
+            cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
+            
+            //Act       
+            Card savedCard = cardService.SaveCard(card);
+
+            //Assert
+            Assert.Equal(card.CardNumber, savedCard.CardNumber);
+            Assert.Equal(card.CVV, savedCard.CVV);
+            Assert.Equal(card.CustomerId, savedCard.CustomerId);
+        }
+
+
+
+
     }
 }
