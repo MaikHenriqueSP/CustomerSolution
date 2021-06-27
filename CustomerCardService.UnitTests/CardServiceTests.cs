@@ -125,7 +125,6 @@ namespace CustomerCardService.UnitTests
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
             //Act       
-
             Action validateCardToken = () => cardService.ValidateToken(randomCard);
 
             //Assert
