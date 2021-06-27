@@ -21,9 +21,7 @@ namespace CustomerCardService.Domain.Models
         [Required]
         private int _cVV;
 
-        public Guid Token { get; set; }
-
-        public DateTimeOffset TokenCreationDate { get; set; }
+        public Token Token { get; set; }
 
         public int CVV
         {

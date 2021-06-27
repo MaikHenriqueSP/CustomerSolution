@@ -16,7 +16,7 @@ namespace CustomerCardService.Api.Models.Input
         public Guid CardId { get; set; }
         
         [Required]
-        public Guid Token { get; set; }
+        public TokenInput TokenInput { get; set; }
         
         [Required]
         public int CVV { get; set; }

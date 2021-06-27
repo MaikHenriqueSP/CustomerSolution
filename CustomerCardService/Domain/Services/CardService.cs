@@ -30,8 +30,12 @@ namespace CustomerCardService.Domain.Services
 
             if (cardOrDefault == null)
             {
-                card.Token = GenerateToken(card);
-                card.TokenCreationDate = DateTimeOffset.UtcNow;
+                //card.Token.TokenValue = GenerateToken(card);
+                card.Token = new()
+                {
+                    TokenValue = GenerateToken(card),
+                };
+                card.Token.CreationDate = DateTimeOffset.UtcNow;
 
                 cardContext.Add(card);
                 cardContext.SaveChanges();
@@ -45,7 +49,7 @@ namespace CustomerCardService.Domain.Services
                 throw new InconsistentCardException();
             }
 
-            cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
+            cardOrDefault.Token.CreationDate = DateTimeOffset.UtcNow;
             cardContext.Update(cardOrDefault);
             cardContext.SaveChanges();
 
@@ -74,7 +78,7 @@ namespace CustomerCardService.Domain.Services
                 throw new CardNotFoundException();
             }
 
-            if (!IsTokenCreationTimeStillValid(queriedCard.TokenCreationDate))
+            if (!IsTokenCreationTimeStillValid(queriedCard.Token.CreationDate))
             {
                 throw new TokenExpiredException();
             }
@@ -88,7 +92,7 @@ namespace CustomerCardService.Domain.Services
 
             Guid originalToken = GenerateToken(queriedCard);
 
-            return originalToken.Equals(card.Token);
+            return originalToken.Equals(card.Token.TokenValue);
         }
 
 

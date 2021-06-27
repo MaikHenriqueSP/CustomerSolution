@@ -73,7 +73,7 @@ namespace CustomerCardService.IntegrationTests
         }
 
         [Fact]
-        private async Task GetTokenValidity_WhenTokenIsValid_ReturnsStatusOk()
+        public async Task GetTokenValidity_WhenTokenIsValid_ReturnsStatusOk()
         {
             //Arrange
             var validCard = new CardSaveInput()
@@ -93,13 +93,14 @@ namespace CustomerCardService.IntegrationTests
             string responseString = await response.Content.ReadAsStringAsync();
             CardSaveOutput cardSaved = JsonConvert.DeserializeObject<CardSaveOutput>(responseString);
 
-            CardTokenValidationInput validCardTokenValidationInput = new CardTokenValidationInput()
+            CardTokenValidationInput validCardTokenValidationInput = new()
             {
                 CardId = cardSaved.CardId,
                 Customer = new CustomerInput()
                 { CustomerId = validCard.Customer.CustomerId },
                 CVV = validCard.CVV,
-                Token = cardSaved.Token
+                TokenInput = new TokenInput() { TokenValue = cardSaved.Token.TokenValue, }
+
             };
 
             HttpResponseMessage tokenValidationResponse = await TestClient.PostAsync(tokeValidityEndpoint, GetStringContentSerialized(validCardTokenValidationInput));
@@ -110,7 +111,7 @@ namespace CustomerCardService.IntegrationTests
 
 
         [Fact]
-        private async Task GetTokenValidity_WhenCardBelongsToDifferenCustomers_ReturnsStatusBadRequest()
+        public async Task GetTokenValidity_WhenCardBelongsToDifferenCustomers_ReturnsStatusBadRequest()
         {
             //Arrange
             var validCard = new CardSaveInput()
@@ -130,13 +131,13 @@ namespace CustomerCardService.IntegrationTests
             string responseString = await response.Content.ReadAsStringAsync();
             CardSaveOutput cardSaved = JsonConvert.DeserializeObject<CardSaveOutput>(responseString);
 
-            CardTokenValidationInput validCardTokenValidationInput = new CardTokenValidationInput()
+            CardTokenValidationInput validCardTokenValidationInput = new()
             {
                 CardId = cardSaved.CardId,
                 Customer = new CustomerInput()
                 { CustomerId = 99 },
                 CVV = validCard.CVV,
-                Token = cardSaved.Token
+                TokenInput = new TokenInput() { TokenValue = cardSaved.Token.TokenValue },
             };
 
             HttpResponseMessage tokenValidationResponse = await TestClient.PostAsync(tokeValidityEndpoint, GetStringContentSerialized(validCardTokenValidationInput));
@@ -146,7 +147,7 @@ namespace CustomerCardService.IntegrationTests
         }
 
         [Fact]
-        private async Task GetTokenValidity_WhenTokenIsDifferent_ReturnsStatusOK_AndValidityEqualsFalse()
+        public async Task GetTokenValidity_WhenTokenIsDifferent_ReturnsStatusOK_AndValidityEqualsFalse()
         {
             //Arrange
             var validCard = new CardSaveInput()
@@ -166,13 +167,13 @@ namespace CustomerCardService.IntegrationTests
             string responseString = await response.Content.ReadAsStringAsync();
             CardSaveOutput cardSaved = JsonConvert.DeserializeObject<CardSaveOutput>(responseString);
 
-            CardTokenValidationInput validCardTokenValidationInput = new CardTokenValidationInput()
+            CardTokenValidationInput validCardTokenValidationInput = new()
             {
                 CardId = cardSaved.CardId,
                 Customer = new CustomerInput()
                 { CustomerId = validCard.Customer.CustomerId },
                 CVV = validCard.CVV,
-                Token = Guid.NewGuid()
+                TokenInput = new TokenInput() { TokenValue = Guid.NewGuid() },
             };
 
             HttpResponseMessage tokenValidationResponse = await TestClient.PostAsync(tokeValidityEndpoint, GetStringContentSerialized(validCardTokenValidationInput));
