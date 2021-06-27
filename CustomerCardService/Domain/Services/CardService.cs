@@ -67,8 +67,8 @@ namespace CustomerCardService.Domain.Services
         public bool ValidateToken(Card card)
         {
 
-            Card queriedCard = cardContext.Cards.FindAsync(card.CardId).Result;
-
+            Card queriedCard = cardContext.Cards.Find(card.CardId);
+            
             if (queriedCard == null)
             {
                 throw new CardNotFoundException();

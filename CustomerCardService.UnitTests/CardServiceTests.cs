@@ -125,12 +125,35 @@ namespace CustomerCardService.UnitTests
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
             //Act       
-           
+
             Action validateCardToken = () => cardService.ValidateToken(randomCard);
 
             //Assert
             Assert.Throws<CardNotFoundException>(validateCardToken);
         }
 
+        [Fact]
+        public void ValidateToken_WhenTokenIsAndValidSaved_ShouldReturnTrue()
+        {
+            //Arrange
+            Card validCard = new()
+            {
+                CVV = 620,
+                CardNumber = 42345678922,
+                CustomerId = 1254,
+                TokenCreationDate = DateTimeOffset.UtcNow,
+                Token = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+            };
+
+            cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
+
+
+            //Act
+            bool isTokenValid = cardService.ValidateToken(validCard);
+
+
+            //Assert
+            Assert.True(isTokenValid);
+        }
     }
 }
