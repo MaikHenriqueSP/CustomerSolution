@@ -25,8 +25,9 @@ namespace CustomerCardService.Domain.Services
 
         public Card SaveCard(Card card)
         {
-            Card cardOrDefault = cardContext.Cards
-                .SingleOrDefault(c => c.CardNumber == card.CardNumber);
+                Card cardOrDefault = cardContext.Cards
+                  .SingleOrDefault(c => c.CardNumber == card.CardNumber);
+            //Card cardOrDefault = null;
 
             if (cardOrDefault == null)
             {
