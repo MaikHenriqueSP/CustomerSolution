@@ -1,10 +1,7 @@
 ﻿using CustomerCardService.Api.Models.Input;
 using CustomerCardService.Api.Models.Output;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -23,7 +20,8 @@ namespace CustomerCardService.IntegrationTests
             {
                 CVV = 2313,
                 CardNumber = 2313,
-                CustomerId = 31
+                Customer = new CustomerInput()
+                { CustomerId = 31 },
             };
             string endpoint = "/api/v1/Card";
 
@@ -42,7 +40,8 @@ namespace CustomerCardService.IntegrationTests
             {
                 CVV = 2313,
                 CardNumber = 12345678912345678,
-                CustomerId = 31
+                Customer = new CustomerInput()
+                { CustomerId = 31 },
             };
             string endpoint = "/api/v1/Card";
 
@@ -61,7 +60,8 @@ namespace CustomerCardService.IntegrationTests
             {
                 CVV = 23132321,
                 CardNumber = 123456789,
-                CustomerId = 31
+                Customer = new CustomerInput()
+                { CustomerId = 31 },
             };
             string endpoint = "/api/v1/card";
 
@@ -80,7 +80,8 @@ namespace CustomerCardService.IntegrationTests
             {
                 CardNumber = 12344566,
                 CVV = 1234,
-                CustomerId = 12
+                Customer = new CustomerInput()
+                { CustomerId = 12 },
             };
             string endpoint = "/api/v1/card";
             string tokeValidityEndpoint = "/api/v1/card/token/validity";
@@ -95,7 +96,8 @@ namespace CustomerCardService.IntegrationTests
             CardTokenValidationInput validCardTokenValidationInput = new CardTokenValidationInput()
             {
                 CardId = cardSaved.CardId,
-                CustomerId = validCard.CustomerId,
+                Customer = new CustomerInput()
+                { CustomerId = validCard.Customer.CustomerId },
                 CVV = validCard.CVV,
                 Token = cardSaved.Token
             };
@@ -115,7 +117,8 @@ namespace CustomerCardService.IntegrationTests
             {
                 CardNumber = 12344566,
                 CVV = 1234,
-                CustomerId = 12
+                Customer = new CustomerInput()
+                { CustomerId = 12 },
             };
             string endpoint = "/api/v1/card";
             string tokeValidityEndpoint = "/api/v1/card/token/validity";
@@ -130,7 +133,8 @@ namespace CustomerCardService.IntegrationTests
             CardTokenValidationInput validCardTokenValidationInput = new CardTokenValidationInput()
             {
                 CardId = cardSaved.CardId,
-                CustomerId = validCard.CustomerId + 1,
+                Customer = new CustomerInput()
+                { CustomerId = 99 },
                 CVV = validCard.CVV,
                 Token = cardSaved.Token
             };
@@ -142,14 +146,15 @@ namespace CustomerCardService.IntegrationTests
         }
 
         [Fact]
-        private async Task GetTokenValidity_WhenTokenIsDifferent_ReturnsStatusCodeBadRequest_AndValidityEqualsFalse()
+        private async Task GetTokenValidity_WhenTokenIsDifferent_ReturnsStatusOK_AndValidityEqualsFalse()
         {
             //Arrange
             var validCard = new CardSaveInput()
             {
                 CardNumber = 12344566,
                 CVV = 1234,
-                CustomerId = 12
+                Customer = new CustomerInput()
+                { CustomerId = 12 },
             };
             string endpoint = "/api/v1/card";
             string tokeValidityEndpoint = "/api/v1/card/token/validity";
@@ -164,14 +169,15 @@ namespace CustomerCardService.IntegrationTests
             CardTokenValidationInput validCardTokenValidationInput = new CardTokenValidationInput()
             {
                 CardId = cardSaved.CardId,
-                CustomerId = validCard.CustomerId,
+                Customer = new CustomerInput()
+                { CustomerId = validCard.Customer.CustomerId },
                 CVV = validCard.CVV,
                 Token = Guid.NewGuid()
             };
 
             HttpResponseMessage tokenValidationResponse = await TestClient.PostAsync(tokeValidityEndpoint, GetStringContentSerialized(validCardTokenValidationInput));
 
-            //Assert            //@TODO: Implement middleware for the correct 
+            //Assert            
             Assert.Equal(HttpStatusCode.OK, tokenValidationResponse.StatusCode);
         }
 

@@ -13,7 +13,7 @@ namespace CustomerCardService.Domain.Models
         public Guid CardId { get; set; }
 
         [Required]
-        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
 
         [Required]
         private long _cardNumber;

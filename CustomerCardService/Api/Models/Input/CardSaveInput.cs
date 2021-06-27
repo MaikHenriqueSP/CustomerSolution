@@ -1,4 +1,5 @@
 ﻿using CustomerCardService.Core.Validation;
+using CustomerCardService.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,7 +11,7 @@ namespace CustomerCardService.Api.Models.Input
     public class CardSaveInput
     {
         [Required]
-        public int CustomerId { get; set; }
+        public CustomerInput Customer { get; set; }
 
         [Required]
         [NumberOfDigits(maxLength: 16,

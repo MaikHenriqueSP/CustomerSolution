@@ -39,7 +39,7 @@ namespace CustomerCardService.Domain.Services
                 return card;
             }
 
-            if (card.CustomerId != cardOrDefault.CustomerId ||
+            if (card.Customer.CustomerId != cardOrDefault.Customer.CustomerId ||
                 card.CVV != cardOrDefault.CVV)
             {
                 throw new InconsistentCardException();
@@ -79,7 +79,7 @@ namespace CustomerCardService.Domain.Services
                 throw new TokenExpiredException();
             }
 
-            if (card.CustomerId != queriedCard.CustomerId)
+            if (card.Customer.CustomerId != queriedCard.Customer.CustomerId)
             {
                 throw new InconsistentCardException();
             }
