@@ -14,26 +14,20 @@ namespace CustomerCardService.Domain.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid CardId { get; private set; }
+        public Guid CardId { get; set; }
 
         [Required]
-        public int CustomerId { get; private set; }
+        public int CustomerId { get; set; }
 
         [Required]
-        public long CardNumber { get; private set; }
+        public long CardNumber { get; set; }
         
         [Required]
-        public int CVV { get; private set; }
+        public int CVV { get; set; }
 
         public Guid Token { get; set; }
 
         public DateTimeOffset TokenCreationDate { get; set; }
 
-        public Card(int customerId, long cardNumber, int cVV)
-        {
-            CustomerId = customerId;
-            CardNumber = cardNumber;
-            CVV = cVV;
-        }
     }
 }

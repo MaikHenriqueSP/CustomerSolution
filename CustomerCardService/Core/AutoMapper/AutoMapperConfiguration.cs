@@ -14,6 +14,7 @@ namespace CustomerCardService.Core.AutoMapper
         public AutoMapperConfiguration()
         {
             CreateMap<CardSaveInput, Card>();
+
             CreateMap<CardTokenValidationInput, Card>();
 
             CreateMap<Card, CardSaveOutput>();
