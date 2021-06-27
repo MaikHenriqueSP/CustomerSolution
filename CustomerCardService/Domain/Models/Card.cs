@@ -16,43 +16,51 @@ namespace CustomerCardService.Domain.Models
         public int CustomerId { get; set; }
 
         [Required]
-        public long CardNumber { get; set; }
+        private long _cardNumber;
 
         [Required]
-        public int CVV { get; set; }
+        private int _cVV;
 
         public Guid Token { get; set; }
 
         public DateTimeOffset TokenCreationDate { get; set; }
 
-        public void SetCVV(int cVV)
+        public int CVV
         {
-            if (!ValidationUtilities.IsNumberWithinMaxNumberOfDigits(cVV, 5))
+            get => _cVV;
+            set
             {
-                throw new ArgumentException("The CVV shouldn't have more than 5 digits");
-            }
+                if (!ValidationUtilities.IsNumberWithinMaxNumberOfDigits(value, 5))
+                {
+                    throw new ArgumentException("The CVV shouldn't have more than 5 digits");
+                }
 
-            if (cVV < 0)
-            {
-                throw new ArgumentException("The CVV shouldn't be negative");
-            }
+                if (value < 0)
+                {
+                    throw new ArgumentException("The CVV shouldn't be negative");
+                }
 
-            CVV = cVV;
+                _cVV = value;
+            }
         }
 
-        public void SetCardNumber(int cardNumber)
+        public long CardNumber
         {
-            if (!ValidationUtilities.IsNumberWithinMaxNumberOfDigits(cardNumber, 16))
+            get => _cardNumber;
+            set
             {
-                throw new ArgumentException("The Card Number shouldn't have more than 16 digits");
-            }
+                if (!ValidationUtilities.IsNumberWithinMaxNumberOfDigits(value, 16))
+                {
+                    throw new ArgumentException("The Card Number shouldn't have more than 16 digits");
+                }
 
-            if (cardNumber < 0)
-            {
-                throw new ArgumentException("The CVV shouldn't be negative");
-            }
+                if (value < 0)
+                {
+                    throw new ArgumentException("The CVV shouldn't be negative");
+                }
 
-            CardNumber = cardNumber;
+                _cardNumber = value;
+            }
         }
 
 
