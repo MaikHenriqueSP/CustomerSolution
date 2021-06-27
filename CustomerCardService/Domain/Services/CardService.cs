@@ -26,7 +26,7 @@ namespace CustomerCardService.Domain.Services
         public Card SaveCard(Card card)
         {
             Card cardOrDefault = cardContext.Cards
-                .SingleOrDefault(c => c.CardNumber == card.CardNumber);
+              .SingleOrDefault(c => c.CardNumber == card.CardNumber);
 
             if (cardOrDefault == null)
             {
@@ -67,8 +67,8 @@ namespace CustomerCardService.Domain.Services
         public bool ValidateToken(Card card)
         {
 
-            Card queriedCard = cardContext.Cards.FindAsync(card.CardId).Result;
-
+            Card queriedCard = cardContext.Cards.Find(card.CardId);
+            
             if (queriedCard == null)
             {
                 throw new CardNotFoundException();

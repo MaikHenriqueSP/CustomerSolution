@@ -33,5 +33,6 @@ namespace CustomerCardService.IntegrationTests
                 });
             TestClient = appFactory.CreateClient();
         }
+
     }
 }
