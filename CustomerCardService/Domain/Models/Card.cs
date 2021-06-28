@@ -7,7 +7,6 @@ namespace CustomerCardService.Domain.Models
 {
     public class Card
     {
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid CardId { get; set; }
@@ -22,6 +21,8 @@ namespace CustomerCardService.Domain.Models
         private int _cVV;
 
         public Token Token { get; set; }
+
+        public static readonly TimeSpan TokenValiditySpan = TimeSpan.FromMinutes(30);
 
         public int CVV
         {

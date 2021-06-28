@@ -124,8 +124,8 @@ namespace CustomerCardService.Domain.Services
 
         private static bool IsTokenCreationTimeStillValid(DateTimeOffset creationTime)
         {
-            //@TODO: DO NOT USE 30 MINUTES HARD-CODED
-            return (DateTimeOffset.UtcNow - creationTime).TotalMinutes < 30;
+            var rangeValidity = DateTimeOffset.UtcNow.Subtract(Card.TokenValiditySpan);
+            return creationTime >= rangeValidity;
         }
 
         private static int GetLastFourDigits(long number)
