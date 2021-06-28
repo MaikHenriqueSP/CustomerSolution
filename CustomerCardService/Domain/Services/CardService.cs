@@ -87,7 +87,7 @@ namespace CustomerCardService.Domain.Services
         }
 
         /// <summary>
-        /// Performs the validation of token from a given card. 
+        /// Performs the validation of a token from a given card. 
         /// It checks if  the card exists, if it is within a valid period of time,
         /// if the provided card is consistent with the queried one and finally 
         /// returns if the tokens matches
@@ -134,7 +134,7 @@ namespace CustomerCardService.Domain.Services
         }
 
         /// <summary>
-        /// Simply computes the hash of a given byte array applying the MD5 algorithm
+        /// Computes the hash of a given byte array applying the MD5 algorithm
         /// </summary>
         /// <param name="target">Target byte array that is going to be hashed</param>
         /// <returns>Hashed output of the 'target'</returns>
@@ -159,12 +159,7 @@ namespace CustomerCardService.Domain.Services
         }
 
         /// <summary>
-        /// Rotate a given number to the right by the rotations number of times.
-        /// Starts by calculating the number of digits of the input number, by applying Log10,
-        /// then it checks if performing rotations will result in any difference at all, 
-        /// if not it just returns the input number.
-        /// The it constructs the result by getting each ith-digit of the number, calculating its new
-        /// position and adding it to the result.
+        /// Rotates a given number to the right by the rotations number of times.
         /// </summary>
         /// <param name="number">The target of the rotation</param>
         /// <param name="rotations">Number of right rotations that will be performed</param>
