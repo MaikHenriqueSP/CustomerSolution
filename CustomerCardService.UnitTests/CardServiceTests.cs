@@ -163,7 +163,8 @@ namespace CustomerCardService.UnitTests
                 { CustomerId = 1254 },
                 Token = new Token()
                 {
-                    CreationDate = DateTimeOffset.UtcNow - TimeSpan.FromMinutes(31),
+                    CreationDate = DateTimeOffset.UtcNow.Subtract(Card.TokenValiditySpan)
+                    .Subtract(TimeSpan.FromMinutes(1)),
                     TokenValue = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
                 },
             };
