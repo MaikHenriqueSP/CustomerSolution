@@ -13,6 +13,7 @@ namespace CustomerCardService.Core.AutoMapper
     {
         public AutoMapperConfiguration()
         {
+            #region DTO to Model
             CreateMap<TokenInput, Token>();
             CreateMap<CustomerInput, Customer>();
             CreateMap<CardSaveInput, Card>()
@@ -20,11 +21,13 @@ namespace CustomerCardService.Core.AutoMapper
             CreateMap<CardTokenValidationInput, Card>()
                 .ForMember(dest => dest.Customer, act => act.MapFrom(from => from.Customer))
                 .ForMember(dest => dest.Token, act => act.MapFrom(from => from.TokenInput)); ;
+            #endregion
 
-
+            #region Model to DTO
             CreateMap<Token, TokenOutput>();
             CreateMap<Card, CardSaveOutput>()
                 .ForMember(dest => dest.Token, act => act.MapFrom(from => from.Token));
+            #endregion
         }
     }
 }
