@@ -16,6 +16,10 @@ using System.Threading.Tasks;
 
 namespace CustomerCardService.Domain.Services
 {
+    /// <summary>
+    /// Provides an implementation of the card service to provide services related to 
+    /// the Card entity.
+    /// </summary>
     public class CardService : ICardService
     {
         private readonly CardContext cardContext;
@@ -24,6 +28,13 @@ namespace CustomerCardService.Domain.Services
             this.cardContext = cardContext;
         }
 
+        /// <summary>
+        /// It saves in the context a given card, if it already exists then it simply
+        /// updates the Token's creation time if the card is consistent with the one that is already
+        /// registered.
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns>Returns the instance of the saved card.</returns>
         public Card SaveCard(Card card)
         {
             Card cardOrDefault = cardContext.Cards
@@ -31,7 +42,6 @@ namespace CustomerCardService.Domain.Services
 
             if (cardOrDefault == null)
             {
-                //card.Token.TokenValue = GenerateToken(card);
                 card.Token = new()
                 {
                     TokenValue = GenerateToken(card),
@@ -57,6 +67,11 @@ namespace CustomerCardService.Domain.Services
             return cardOrDefault;
         }
 
+        /// <summary>
+        /// Generates a deterministic token based on a Card instance.
+        /// </summary>
+        /// <param name="card">Card instance</param>
+        /// <returns>Returns a deterministic Guid</returns>
         protected Guid GenerateToken(Card card)
         {
             long cardNumber = card.CardNumber;
@@ -68,6 +83,14 @@ namespace CustomerCardService.Domain.Services
             return new Guid(hashedRotatedString);
         }
 
+        /// <summary>
+        /// Performs the validation of token from a given card. 
+        /// It checks if  the card exists, if it is within a valid period of time,
+        /// if the provided card is consistent with the queried one and finally 
+        /// returns if the tokens matches
+        /// </summary>
+        /// <param name="card">Card instance</param>
+        /// <returns>Returns whether the card's token is valid or not</returns>
         public bool ValidateToken(Card card)
         {
 
@@ -107,6 +130,11 @@ namespace CustomerCardService.Domain.Services
             return (int)(number % 10000);
         }
 
+        /// <summary>
+        /// Simply computes the hash of a given byte array applying the MD5 algorithm
+        /// </summary>
+        /// <param name="target">Target byte array that is going to be hashed</param>
+        /// <returns>Hashed output of the 'target'</returns>
         private static byte[] CalculateStringMD5Hash(byte[] target)
         {
             using (MD5 md5 = MD5.Create())
@@ -127,6 +155,17 @@ namespace CustomerCardService.Domain.Services
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Rotate a given number to the right by the rotations number of times.
+        /// Starts by calculating the number of digits of the input number, by applying Log10,
+        /// then it checks if performing rotations will result in any difference at all, 
+        /// if not it just returns the input number.
+        /// The it constructs the result by getting each ith-digit of the number, calculating its new
+        /// position and adding it to the result.
+        /// </summary>
+        /// <param name="number">The target of the rotation</param>
+        /// <param name="rotations">Number of right rotations that will be performed</param>
+        /// <returns>Right rotated number</returns>
         private static int RightRotateNumber(int number, int rotations)
         {
             int numberLength = (int)Math.Log10(number) + 1;
