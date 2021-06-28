@@ -1,15 +1,8 @@
-﻿using AutoMapper;
-using CustomerCardService.Api.Models.Input;
-using CustomerCardService.Api.Models.Output;
-using CustomerCardService.Domain.Exceptions;
+﻿using CustomerCardService.Domain.Exceptions;
 using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers.Binary;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;

@@ -1,6 +1,4 @@
-﻿
-using CustomerCardService.Api.Models.Output;
-using CustomerCardService.Domain.Models;
+﻿using CustomerCardService.Domain.Models;
 using System.Threading.Tasks;
 
 namespace CustomerCardService.Domain.Services

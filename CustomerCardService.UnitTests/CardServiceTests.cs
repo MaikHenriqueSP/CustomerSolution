@@ -2,13 +2,10 @@ using CustomerCardService.Domain.Exceptions;
 using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
 using CustomerCardService.Domain.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 

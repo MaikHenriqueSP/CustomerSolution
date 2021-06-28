@@ -2,12 +2,8 @@
 using CustomerCardService.Api.Models.Input;
 using CustomerCardService.Api.Models.Output;
 using CustomerCardService.Domain.Models;
-using CustomerCardService.Domain.Repository;
 using CustomerCardService.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CustomerCardService.Api.Controllers
