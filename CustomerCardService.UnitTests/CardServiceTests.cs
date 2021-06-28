@@ -16,7 +16,7 @@ namespace CustomerCardService.UnitTests
     public class CardServiceTests
     {
         private readonly CardService cardService;
-        private readonly Mock<CardContext> cardContextMock = new Mock<CardContext>();
+        private readonly Mock<CardContext> cardContextMock = new();
         public CardServiceTests()
         {
             cardService = new CardService(cardContextMock.Object);
@@ -30,10 +30,11 @@ namespace CustomerCardService.UnitTests
             {
                 CVV = 123,
                 CardNumber = 12345,
-                CustomerId = 12345,
+                Customer = new Customer()
+                { CustomerId = 12345 },
             };
 
-            var cards = new List<Card>() { card };
+            var cards = new List<Card>();
             var mockDbSet = DbContextMock.GenerateDbSetFromList(cards);
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
@@ -43,7 +44,7 @@ namespace CustomerCardService.UnitTests
             //Assert
             Assert.Equal(card.CardNumber, savedCard.CardNumber);
             Assert.Equal(card.CVV, savedCard.CVV);
-            Assert.Equal(card.CustomerId, savedCard.CustomerId);
+            Assert.Equal(card.Customer.CustomerId, savedCard.Customer.CustomerId); ;
         }
 
         [Fact]
@@ -54,7 +55,8 @@ namespace CustomerCardService.UnitTests
             {
                 CVV = 123,
                 CardNumber = 12345,
-                CustomerId = 12345
+                Customer = new Customer()
+                { CustomerId = 12345 },
             }
             ;
 
@@ -62,7 +64,8 @@ namespace CustomerCardService.UnitTests
             {
                 CVV = firstSavedCard.CVV,
                 CardNumber = firstSavedCard.CardNumber,
-                CustomerId = 11,
+                Customer = new Customer()
+                { CustomerId = 11 },
             };
 
             var cards = new List<Card>() { firstSavedCard };
@@ -70,7 +73,6 @@ namespace CustomerCardService.UnitTests
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
             //Act       
-            cardService.SaveCard(firstSavedCard);
             Action saveDifferentCustomerIdCard = () => cardService.SaveCard(differentCustomerIdCard);
 
             //Assert
@@ -85,14 +87,16 @@ namespace CustomerCardService.UnitTests
             {
                 CVV = 123,
                 CardNumber = 12345,
-                CustomerId = 12345,
+                Customer = new Customer()
+                { CustomerId = 12345 },
             };
 
             Card differentCVVCard = new()
             {
                 CVV = 444,
                 CardNumber = firstSavedCard.CardNumber,
-                CustomerId = firstSavedCard.CustomerId,
+                Customer = new Customer()
+                { CustomerId = firstSavedCard.Customer.CustomerId },
             };
 
             var cards = new List<Card>() { firstSavedCard };
@@ -100,7 +104,6 @@ namespace CustomerCardService.UnitTests
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
             //Act       
-            cardService.SaveCard(firstSavedCard);
             Action saveDifferentCVVCard = () => cardService.SaveCard(differentCVVCard);
 
             //Assert
@@ -117,7 +120,8 @@ namespace CustomerCardService.UnitTests
             {
                 CVV = 123,
                 CardNumber = 12345,
-                CustomerId = 12345,
+                Customer = new Customer()
+                { CustomerId = 12345 },
             };
 
             var cards = new List<Card>() { randomCard };
@@ -139,9 +143,13 @@ namespace CustomerCardService.UnitTests
             {
                 CVV = 620,
                 CardNumber = 42345678922,
-                CustomerId = 1254,
-                TokenCreationDate = DateTimeOffset.UtcNow,
-                Token = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+                Customer = new Customer()
+                { CustomerId = 1254 },
+                Token = new Token()
+                {
+                    CreationDate = DateTimeOffset.UtcNow,
+                    TokenValue = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+                },
             };
 
             cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
@@ -162,9 +170,13 @@ namespace CustomerCardService.UnitTests
             {
                 CVV = 620,
                 CardNumber = 42345678922,
-                CustomerId = 1254,
-                TokenCreationDate = DateTimeOffset.UtcNow - TimeSpan.FromMinutes(31),
-                Token = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+                Customer = new Customer()
+                { CustomerId = 1254 },
+                Token = new Token()
+                {
+                    CreationDate = DateTimeOffset.UtcNow - TimeSpan.FromMinutes(31),
+                    TokenValue = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+                },
             };
 
             cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
@@ -185,18 +197,27 @@ namespace CustomerCardService.UnitTests
             {
                 CVV = 620,
                 CardNumber = 42345678922,
-                CustomerId = 1254,
-                TokenCreationDate = DateTimeOffset.UtcNow,
-                Token = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+                Customer = new Customer()
+                { CustomerId = 1254 },
+                Token = new Token()
+                {
+                    CreationDate = DateTimeOffset.UtcNow,
+                    TokenValue = Guid.Parse("5a751d6a-0b6e-f05c-fe51-b86e5d1458e6"),
+                }
+
             };
 
             Card invalidCard = new()
             {
                 CVV = validCard.CVV,
                 CardNumber = validCard.CardNumber,
-                CustomerId = 1111,
-                TokenCreationDate = validCard.TokenCreationDate,
-                Token = validCard.Token
+                Customer = new Customer()
+                { CustomerId = 1111 },
+                Token = new Token()
+                {
+                    CreationDate = validCard.Token.CreationDate,
+                    TokenValue = validCard.Token.TokenValue
+                }
             };
 
             cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);

@@ -7,6 +7,7 @@ using CustomerCardService.Domain.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -30,8 +31,12 @@ namespace CustomerCardService.Domain.Services
 
             if (cardOrDefault == null)
             {
-                card.Token = GenerateToken(card);
-                card.TokenCreationDate = DateTimeOffset.UtcNow;
+                //card.Token.TokenValue = GenerateToken(card);
+                card.Token = new()
+                {
+                    TokenValue = GenerateToken(card),
+                };
+                card.Token.CreationDate = DateTimeOffset.UtcNow;
 
                 cardContext.Add(card);
                 cardContext.SaveChanges();
@@ -39,13 +44,13 @@ namespace CustomerCardService.Domain.Services
                 return card;
             }
 
-            if (card.CustomerId != cardOrDefault.CustomerId ||
+            if (card.Customer.CustomerId != cardOrDefault.Customer.CustomerId ||
                 card.CVV != cardOrDefault.CVV)
             {
                 throw new InconsistentCardException();
             }
 
-            cardOrDefault.TokenCreationDate = DateTimeOffset.UtcNow;
+            cardOrDefault.Token.CreationDate = DateTimeOffset.UtcNow;
             cardContext.Update(cardOrDefault);
             cardContext.SaveChanges();
 
@@ -56,9 +61,8 @@ namespace CustomerCardService.Domain.Services
         {
             long cardNumber = card.CardNumber;
             int cardNumberLastFourDigits = GetLastFourDigits(cardNumber);
-            int[] rightRotatedDigits = RightRotateNumberToIntArray(cardNumberLastFourDigits, card.CVV);
-            string rotatedString = string.Join("", rightRotatedDigits);
-            byte[] hashedBytes = CalculateStringMD5Hash(rotatedString);
+            int rightRotatedNumber = RightRotateNumber(cardNumberLastFourDigits, card.CVV);
+            byte[] hashedBytes = CalculateStringMD5Hash(Encoding.UTF8.GetBytes(rightRotatedNumber.ToString()));
             string hashedRotatedString = ConvertByteArrayToString(hashedBytes);
 
             return new Guid(hashedRotatedString);
@@ -68,18 +72,18 @@ namespace CustomerCardService.Domain.Services
         {
 
             Card queriedCard = cardContext.Cards.Find(card.CardId);
-            
+
             if (queriedCard == null)
             {
                 throw new CardNotFoundException();
             }
 
-            if (!IsTokenCreationTimeStillValid(queriedCard.TokenCreationDate))
+            if (!IsTokenCreationTimeStillValid(queriedCard.Token.CreationDate))
             {
                 throw new TokenExpiredException();
             }
 
-            if (card.CustomerId != queriedCard.CustomerId)
+            if (card.Customer.CustomerId != queriedCard.Customer.CustomerId)
             {
                 throw new InconsistentCardException();
             }
@@ -88,7 +92,7 @@ namespace CustomerCardService.Domain.Services
 
             Guid originalToken = GenerateToken(queriedCard);
 
-            return originalToken.Equals(card.Token);
+            return originalToken.Equals(card.Token.TokenValue);
         }
 
 
@@ -103,11 +107,11 @@ namespace CustomerCardService.Domain.Services
             return (int)(number % 10000);
         }
 
-        private static byte[] CalculateStringMD5Hash(string target)
+        private static byte[] CalculateStringMD5Hash(byte[] target)
         {
             using (MD5 md5 = MD5.Create())
             {
-                return md5.ComputeHash(Encoding.UTF8.GetBytes(target));
+                return md5.ComputeHash(target);
             }
         }
 
@@ -123,19 +127,25 @@ namespace CustomerCardService.Domain.Services
             return sb.ToString();
         }
 
-        private static int[] RightRotateNumberToIntArray(int number, int rotations)
+        private static int RightRotateNumber(int number, int rotations)
         {
             int numberLength = (int)Math.Log10(number) + 1;
-            int[] rightRotatedVector = new int[numberLength];
+
+            if (numberLength % rotations == 0)
+            {
+                return number;
+            }
+
+            int result = 0;
 
             for (int i = numberLength - 1, multiplicationFactor = 10, divisionFactor = 1; i >= 0; i--,
                 multiplicationFactor *= 10, divisionFactor *= 10)
             {
                 int ithDigit = (number % multiplicationFactor) / divisionFactor;
                 int digitNewPosition = (i + rotations) % numberLength;
-                rightRotatedVector[digitNewPosition] = ithDigit;
+                result += (int)Math.Pow(10, numberLength - 1 - digitNewPosition) * ithDigit;
             }
-            return rightRotatedVector;
+            return result;
         }
 
     }

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace CustomerCardService.Api.Models.Output
 {
-    public class CardSaveOutput
+    public class TokenOutput
     {
-        public Guid CardId { get; set; }
-        public TokenOutput Token { get; set; }
+        public DateTimeOffset CreationDate { get; set; }
+        public Guid TokenValue { get; set; }
     }
 }

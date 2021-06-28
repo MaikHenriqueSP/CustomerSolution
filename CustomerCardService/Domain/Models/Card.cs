@@ -1,11 +1,7 @@
-﻿using CustomerCardService.Core.Validation;
-using Microsoft.EntityFrameworkCore;
+﻿using CustomerCardService.Core.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CustomerCardService.Domain.Models
 {
@@ -17,17 +13,54 @@ namespace CustomerCardService.Domain.Models
         public Guid CardId { get; set; }
 
         [Required]
-        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
 
         [Required]
-        public long CardNumber { get; set; }
-        
+        private long _cardNumber;
+
         [Required]
-        public int CVV { get; set; }
+        private int _cVV;
 
-        public Guid Token { get; set; }
+        public Token Token { get; set; }
 
-        public DateTimeOffset TokenCreationDate { get; set; }
+        public int CVV
+        {
+            get => _cVV;
+            set
+            {
+                if (!ValidationUtilities.IsNumberWithinMaxNumberOfDigits(value, 5))
+                {
+                    throw new ArgumentException("The CVV shouldn't have more than 5 digits");
+                }
+
+                if (value < 0)
+                {
+                    throw new ArgumentException("The CVV shouldn't be negative");
+                }
+
+                _cVV = value;
+            }
+        }
+
+        public long CardNumber
+        {
+            get => _cardNumber;
+            set
+            {
+                if (!ValidationUtilities.IsNumberWithinMaxNumberOfDigits(value, 16))
+                {
+                    throw new ArgumentException("The Card Number shouldn't have more than 16 digits");
+                }
+
+                if (value < 0)
+                {
+                    throw new ArgumentException("The CVV shouldn't be negative");
+                }
+
+                _cardNumber = value;
+            }
+        }
+
 
     }
 }

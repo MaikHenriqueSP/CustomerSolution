@@ -13,11 +13,18 @@ namespace CustomerCardService.Core.AutoMapper
     {
         public AutoMapperConfiguration()
         {
-            CreateMap<CardSaveInput, Card>();
+            CreateMap<TokenInput, Token>();
+            CreateMap<CustomerInput, Customer>();
+            CreateMap<CardSaveInput, Card>()
+                .ForMember(dest => dest.Customer, act => act.MapFrom(from => from.Customer));
+            CreateMap<CardTokenValidationInput, Card>()
+                .ForMember(dest => dest.Customer, act => act.MapFrom(from => from.Customer))
+                .ForMember(dest => dest.Token, act => act.MapFrom(from => from.TokenInput)); ;
 
-            CreateMap<CardTokenValidationInput, Card>();
 
-            CreateMap<Card, CardSaveOutput>();
+            CreateMap<Token, TokenOutput>();
+            CreateMap<Card, CardSaveOutput>()
+                .ForMember(dest => dest.Token, act => act.MapFrom(from => from.Token));
         }
     }
 }
