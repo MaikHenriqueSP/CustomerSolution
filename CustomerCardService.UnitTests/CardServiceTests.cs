@@ -50,7 +50,7 @@ namespace CustomerCardService.UnitTests
         }
 
         [Fact]
-        public async void SaveCard_WhenCardAlreadyExistsAndCustomerIdIsDifferent_ShouldThrowInconsistentCardException()
+        public async Task SaveCard_WhenCardAlreadyExistsAndCustomerIdIsDifferent_ShouldThrowInconsistentCardException()
         {
             //Arrange
             Card firstSavedCard = new()
@@ -79,7 +79,7 @@ namespace CustomerCardService.UnitTests
         }
 
         [Fact]
-        public async void SaveCard_WhenCardAlreadyExistsAndCVVIsDifferent_ShouldThrowInconsistentCardException()
+        public async Task SaveCard_WhenCardAlreadyExistsAndCVVIsDifferent_ShouldThrowInconsistentCardException()
         {
             //Arrange
             Card firstSavedCard = new()
@@ -108,7 +108,7 @@ namespace CustomerCardService.UnitTests
         }
 
         [Fact]
-        public async void ValidateToken_WhenCardNotSaved_ShouldThrowCardNotFoundException()
+        public async Task ValidateToken_WhenCardNotSaved_ShouldThrowCardNotFoundException()
         {
             //Arrange
             Card randomCard = new()
@@ -128,7 +128,7 @@ namespace CustomerCardService.UnitTests
         }
 
         [Fact]
-        public async void ValidateToken_WhenTokenIsValid_ShouldReturnTrue()
+        public async Task ValidateToken_WhenTokenIsValid_ShouldReturnTrue()
         {
             //Arrange
             Card validCard = new()
@@ -155,7 +155,7 @@ namespace CustomerCardService.UnitTests
 
 
         [Fact]
-        public async void ValidateToken_WhenTokenOutDated_ShouldReturnFalse()
+        public async Task ValidateToken_WhenTokenOutDated_ShouldReturnFalse()
         {
             //Arrange
             Card validCard = new()
@@ -179,7 +179,7 @@ namespace CustomerCardService.UnitTests
 
 
         [Fact]
-        public async void ValidateToken_WhenCardCustomerAreDifferent_ShouldThrowInconsistentCardException()
+        public async Task ValidateToken_WhenCardCustomerAreDifferent_ShouldThrowInconsistentCardException()
         {
             //Arrange
             Card validCard = new()
