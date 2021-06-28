@@ -1,4 +1,6 @@
+using CustomerCardService.Core.AutoMapper;
 using CustomerCardService.Domain.Repository;
+using CustomerCardService.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,7 +30,9 @@ namespace CustomerCardService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CardContext>(opt => opt.UseInMemoryDatabase("CardsList"));
+            services.AddScoped<ICardService, CardService>();
+            services.AddAutoMapper(typeof(AutoMapperConfiguration));
+            services.AddDbContext<CardContext>(opt => opt.UseInMemoryDatabase("CardsList"), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -45,6 +49,11 @@ namespace CustomerCardService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomerCardService v1"));
             }
+            else
+            {
+                app.UseExceptionHandler("/error");
+            }
+            app.UsePathBase("/api/v1/");
 
             app.UseHttpsRedirection();
 

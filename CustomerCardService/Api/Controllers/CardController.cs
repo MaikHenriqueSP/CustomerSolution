@@ -1,5 +1,9 @@
-﻿using CustomerCardService.Domain.Models;
+﻿using AutoMapper;
+using CustomerCardService.Api.Models.Input;
+using CustomerCardService.Api.Models.Output;
+using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
+using CustomerCardService.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,38 +12,37 @@ using System.Threading.Tasks;
 
 namespace CustomerCardService.Api.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("/[controller]")]
     [ApiController]
     public class CardController : ControllerBase
     {
-        private readonly CardContext _cardContext;
 
-        public CardController(CardContext cardContext)
+        private readonly ICardService cardService;
+        private readonly IMapper mapper;
+        public CardController(ICardService cardService, IMapper mapper)
         {
-            _cardContext = cardContext;
+            this.cardService = cardService;
+            this.mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Card>> PostCard(Card card)
+        public ActionResult<Card> PostCard(CardSaveInput card)
         {
-            _cardContext.Cards.Add(card);
-            await _cardContext.SaveChangesAsync();
+            Card cardMapped = mapper.Map<Card>(card);
+            Card cardSaved = cardService.SaveCard(cardMapped);
+            CardSaveOutput cardSavedOutput = mapper.Map<CardSaveOutput>(cardSaved);
 
-            return CreatedAtAction(nameof(GetSomething), new { card.CardId, card.Token },
-                new { card.CardId, card.Token });
+            return CreatedAtAction(nameof(GetTokenValidity), cardSavedOutput);
         }
 
-        [HttpGet("{cardId}")]
-        public async Task<ActionResult<Card>> GetSomething(Guid cardId)
+        [Route("token/validity")]
+        [HttpPost]
+        public ActionResult<Card> GetTokenValidity(CardTokenValidationInput card)
         {
-            var card = await _cardContext.Cards.FindAsync(cardId);
+            Card cardMapped = mapper.Map<Card>(card);
+            bool tokenValidity = cardService.ValidateToken(cardMapped);
 
-            if (card == null)
-            {
-                return NotFound();
-            }
-
-            return card;
+            return Ok(new { isTokenValid = tokenValidity });
         }
     }
 }
