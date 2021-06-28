@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace CustomerCardService.Core.Utilities
 {
+    /// <summary>
+    /// Provides generic validations implementations as a library.
+    /// </summary>
     public static class ValidationUtilities
     {
         public static bool IsNumberWithinMaxNumberOfDigits(long number, int numberOfDigits) 

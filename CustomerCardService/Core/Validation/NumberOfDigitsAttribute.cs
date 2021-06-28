@@ -2,6 +2,10 @@
 
 namespace CustomerCardService.Core.Validation
 {
+    /// <summary>
+    /// Custom Data Annotation that provides validation for the number of digits of a number.
+    /// It checks if the given input is within the specified range of digits.
+    /// </summary>
     public class NumberOfDigitsAttribute : ValidationAttribute
     {
         private readonly int minLength;
