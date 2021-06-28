@@ -1,15 +1,8 @@
-﻿using AutoMapper;
-using CustomerCardService.Api.Models.Input;
-using CustomerCardService.Api.Models.Output;
-using CustomerCardService.Domain.Exceptions;
+﻿using CustomerCardService.Domain.Exceptions;
 using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers.Binary;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -38,7 +31,7 @@ namespace CustomerCardService.Domain.Services
         /// </summary>
         /// <param name="card"></param>
         /// <returns>Returns the instance of the saved card.</returns>
-        public Card SaveCard(Card card)
+        public async Task<Card> SaveCard(Card card)
         {
             Card cardOrDefault = cardContext.Cards
               .SingleOrDefault(c => c.CardNumber == card.CardNumber);
@@ -51,10 +44,10 @@ namespace CustomerCardService.Domain.Services
                 };
                 card.Token.CreationDate = DateTimeOffset.UtcNow;
 
-                cardContext.Add(card);
-                cardContext.SaveChanges();
+                await cardContext.AddAsync(card);
+                await cardContext.SaveChangesAsync();
 
-                return card;
+                return  card;
             }
 
             if (card.Customer.CustomerId != cardOrDefault.Customer.CustomerId ||
@@ -65,7 +58,7 @@ namespace CustomerCardService.Domain.Services
 
             cardOrDefault.Token.CreationDate = DateTimeOffset.UtcNow;
             cardContext.Update(cardOrDefault);
-            cardContext.SaveChanges();
+            await cardContext.SaveChangesAsync();
 
             return cardOrDefault;
         }
@@ -94,10 +87,10 @@ namespace CustomerCardService.Domain.Services
         /// </summary>
         /// <param name="card">Card instance</param>
         /// <returns>Returns whether the card's token is valid or not</returns>
-        public bool ValidateToken(Card card)
+        public async Task<bool> ValidateToken(Card card)
         {
 
-            Card queriedCard = cardContext.Cards.Find(card.CardId);
+            Card queriedCard = await cardContext.Cards.FindAsync(card.CardId);
 
             if (queriedCard == null)
             {

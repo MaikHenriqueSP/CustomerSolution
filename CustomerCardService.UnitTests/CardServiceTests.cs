@@ -2,13 +2,10 @@ using CustomerCardService.Domain.Exceptions;
 using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
 using CustomerCardService.Domain.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -41,7 +38,7 @@ namespace CustomerCardService.UnitTests
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
             //Act       
-            Card savedCard = cardService.SaveCard(card);
+            Card savedCard = cardService.SaveCard(card).Result;
 
             //Assert
             Assert.Equal(card.CardNumber, savedCard.CardNumber);
@@ -50,7 +47,7 @@ namespace CustomerCardService.UnitTests
         }
 
         [Fact]
-        public void SaveCard_WhenCardAlreadyExistsAndCustomerIdIsDifferent_ShouldThrowInconsistentCardException()
+        public async Task SaveCard_WhenCardAlreadyExistsAndCustomerIdIsDifferent_ShouldThrowInconsistentCardException()
         {
             //Arrange
             Card firstSavedCard = new()
@@ -74,15 +71,12 @@ namespace CustomerCardService.UnitTests
             var mockDbSet = DbContextMock.GenerateDbSetFromList(cards);
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
-            //Act       
-            Action saveDifferentCustomerIdCard = () => cardService.SaveCard(differentCustomerIdCard);
-
             //Assert
-            Assert.Throws<InconsistentCardException>(saveDifferentCustomerIdCard);
+            await Assert.ThrowsAsync<InconsistentCardException>(() => cardService.SaveCard(differentCustomerIdCard));
         }
 
         [Fact]
-        public void SaveCard_WhenCardAlreadyExistsAndCVVIsDifferent_ShouldThrowInconsistentCardException()
+        public async Task SaveCard_WhenCardAlreadyExistsAndCVVIsDifferent_ShouldThrowInconsistentCardException()
         {
             //Arrange
             Card firstSavedCard = new()
@@ -105,17 +99,13 @@ namespace CustomerCardService.UnitTests
             var mockDbSet = DbContextMock.GenerateDbSetFromList(cards);
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
-            //Act       
-            Action saveDifferentCVVCard = () => cardService.SaveCard(differentCVVCard);
-
             //Assert
-            Assert.Throws<InconsistentCardException>(saveDifferentCVVCard);
+            await Assert.ThrowsAsync<InconsistentCardException>(() => cardService.SaveCard(differentCVVCard));
 
         }
 
-
         [Fact]
-        public void ValidateToken_WhenCardNotSaved_ShouldThrowCardNotFoundException()
+        public async Task ValidateToken_WhenCardNotSaved_ShouldThrowCardNotFoundException()
         {
             //Arrange
             Card randomCard = new()
@@ -130,15 +120,12 @@ namespace CustomerCardService.UnitTests
             var mockDbSet = DbContextMock.GenerateDbSetFromList(cards);
             cardContextMock.Setup(c => c.Cards).Returns(mockDbSet);
 
-            //Act       
-            Action validateCardToken = () => cardService.ValidateToken(randomCard);
-
             //Assert
-            Assert.Throws<CardNotFoundException>(validateCardToken);
+            await Assert.ThrowsAsync<CardNotFoundException>(() => cardService.ValidateToken(randomCard));
         }
 
         [Fact]
-        public void ValidateToken_WhenTokenIsValid_ShouldReturnTrue()
+        public async Task ValidateToken_WhenTokenIsValid_ShouldReturnTrue()
         {
             //Arrange
             Card validCard = new()
@@ -154,10 +141,10 @@ namespace CustomerCardService.UnitTests
                 },
             };
 
-            cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
+            cardContextMock.Setup(t => t.Cards.FindAsync(It.IsAny<object>())).ReturnsAsync(validCard);
 
             //Act
-            bool isTokenValid = cardService.ValidateToken(validCard);
+            bool isTokenValid = await cardService.ValidateToken(validCard);
 
             //Assert
             Assert.True(isTokenValid);
@@ -165,7 +152,7 @@ namespace CustomerCardService.UnitTests
 
 
         [Fact]
-        public void ValidateToken_WhenTokenOutDated_ShouldReturnFalse()
+        public async Task ValidateToken_WhenTokenOutDated_ShouldReturnFalse()
         {
             //Arrange
             Card validCard = new()
@@ -181,18 +168,15 @@ namespace CustomerCardService.UnitTests
                 },
             };
 
-            cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
-
-            //Act
-            Action performValidation = () => cardService.ValidateToken(validCard);
+            cardContextMock.Setup(t => t.Cards.FindAsync(It.IsAny<object>())).ReturnsAsync(validCard);
 
             //Assert
-            Assert.Throws<TokenExpiredException>(performValidation);
+            await Assert.ThrowsAsync<TokenExpiredException>(() => cardService.ValidateToken(validCard));
         }
 
 
         [Fact]
-        public void ValidateToken_WhenCardCustomerAreDifferent_ShouldThrowInconsistentCardException()
+        public async Task ValidateToken_WhenCardCustomerAreDifferent_ShouldThrowInconsistentCardException()
         {
             //Arrange
             Card validCard = new()
@@ -222,13 +206,10 @@ namespace CustomerCardService.UnitTests
                 }
             };
 
-            cardContextMock.Setup(t => t.Cards.Find(It.IsAny<object>())).Returns(validCard);
-
-            //Act
-            Action performValidation = () => cardService.ValidateToken(invalidCard);
+            cardContextMock.Setup(t => t.Cards.FindAsync(It.IsAny<object>())).ReturnsAsync(validCard);
 
             //Assert
-            Assert.Throws<InconsistentCardException>(performValidation);
+            await Assert.ThrowsAsync<InconsistentCardException>(() => cardService.ValidateToken(invalidCard));
         }
     }
 }
