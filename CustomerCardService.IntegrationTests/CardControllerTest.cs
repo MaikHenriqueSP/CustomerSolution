@@ -142,7 +142,7 @@ namespace CustomerCardService.IntegrationTests
 
             HttpResponseMessage tokenValidationResponse = await TestClient.PostAsync(tokeValidityEndpoint, GetStringContentSerialized(validCardTokenValidationInput));
 
-            //Assert            //@TODO: Implement middleware for the correct 
+            //Assert
             Assert.Equal(HttpStatusCode.BadRequest, tokenValidationResponse.StatusCode);
         }
 
