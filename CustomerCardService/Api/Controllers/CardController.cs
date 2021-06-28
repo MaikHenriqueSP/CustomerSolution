@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CustomerCardService.Api.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("/[controller]")]
     [ApiController]
     public class CardController : ControllerBase
     {

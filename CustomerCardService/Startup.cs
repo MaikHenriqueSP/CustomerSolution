@@ -45,8 +45,7 @@ namespace CustomerCardService
         {
             if (env.IsDevelopment())
             {
-               // app.UseDeveloperExceptionPage();
-                app.UseExceptionHandler("/error");
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomerCardService v1"));
             }
@@ -54,6 +53,7 @@ namespace CustomerCardService
             {
                 app.UseExceptionHandler("/error");
             }
+            app.UsePathBase("/api/v1/");
 
             app.UseHttpsRedirection();
 
