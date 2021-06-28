@@ -6,6 +6,7 @@ using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -23,9 +24,11 @@ namespace CustomerCardService.Domain.Services
     public class CardService : ICardService
     {
         private readonly CardContext cardContext;
-        public CardService(CardContext cardContext)
+        private readonly ILogger logger;
+        public CardService(CardContext cardContext, ILogger<CardService> logger)
         {
             this.cardContext = cardContext;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -111,7 +114,7 @@ namespace CustomerCardService.Domain.Services
                 throw new InconsistentCardException();
             }
 
-            Console.WriteLine(card.CardNumber);
+            logger.LogInformation($"Card Number: {card.CardNumber}");
 
             Guid originalToken = GenerateToken(queriedCard);
 
