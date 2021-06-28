@@ -7,7 +7,7 @@ namespace CustomerCardService.Domain.Exceptions
 {
     public class CardNotFoundException : Exception
     {
-        private static readonly string defaultMessage = "There is not card with the provided information";
+        private static readonly string defaultMessage = "There is no card with the provided information";
 
         public CardNotFoundException() : base(defaultMessage)
         {

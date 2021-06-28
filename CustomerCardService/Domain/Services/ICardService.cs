@@ -1,13 +1,13 @@
 ﻿
 using CustomerCardService.Api.Models.Output;
 using CustomerCardService.Domain.Models;
-
+using System.Threading.Tasks;
 
 namespace CustomerCardService.Domain.Services
 {
     public interface ICardService
     {
-        Card SaveCard(Card card);
-        bool ValidateToken(Card card);
+        Task<Card> SaveCard(Card card);
+        Task<bool> ValidateToken(Card card);
     }
 }
