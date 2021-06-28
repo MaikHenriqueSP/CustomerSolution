@@ -3,6 +3,7 @@ using CustomerCardService.Domain.Models;
 using CustomerCardService.Domain.Repository;
 using CustomerCardService.Domain.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,10 @@ namespace CustomerCardService.UnitTests
     {
         private readonly CardService cardService;
         private readonly Mock<CardContext> cardContextMock = new();
+        private readonly Mock<ILogger<CardService>> logger = new();
         public CardServiceTests()
         {
-            cardService = new CardService(cardContextMock.Object);
+            cardService = new CardService(cardContextMock.Object, logger.Object);
         }
 
         [Fact]
